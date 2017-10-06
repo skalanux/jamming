@@ -5,6 +5,16 @@ import SearchBar from '../SearchBar/SearchBar'
 import SearchResults from '../SearchResults/SearchResults'
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchResults: [
+        { id: 1, name: 'Enjoy the silence', artist: 'Depeche Mode', album: 'Violator' },
+        { id: 2, name: 'Strangelove', artist: 'Depeche Mode', album: 'Music for the masses' },
+        { id: 3, name: 'Where is the revolution', artist: 'Depeche Mode', album: 'Spirit' }
+      ]
+    };
+  }
   render() {
     return (
       <div>
@@ -12,7 +22,7 @@ class App extends Component {
         <div className="App">
           <SearchBar />
           <div className="App-playlist">
-            <SearchResults />
+            <SearchResults searchResults={this.state.searchResults} />
             <Playlist />
           </div>
         </div>

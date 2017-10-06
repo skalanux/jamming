@@ -3,14 +3,14 @@ import './Track.css';
 
 class Track extends Component {
     renderAction() {
-        return <a>{this.props.isRemoval ? '-' : '+'}</a>
+        return this.props.isRemoval ? '-' : '+';
     }
     render() {
         return (
             <div className="Track">
                 <div className="Track-information">
-                    <h3>StrangeLove</h3>
-                    <p> Depeche Mode | Music for the masses</p>
+                    <h3>{this.props.name}</h3>
+                    <p> {this.props.artist} | {this.props.album} </p>
                 </div>
                 <a className="Track-action">{this.renderAction()}</a>
             </div>

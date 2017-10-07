@@ -21,6 +21,19 @@ class App extends Component {
       ]
     };
   }
+  addTrack(track) {
+    let isOnTrack = false;
+
+    this.state.playlistTracks.forEach(playlistTrack => {
+      if (playlistTrack.id === track.id) {
+        isOnTrack = true;
+      }
+    });
+
+    if (!isOnTrack) {
+      this.setState({ playlistTracks: this.state.playlistTracks.push(track) });
+    }
+  }
   render() {
     return (
       <div>

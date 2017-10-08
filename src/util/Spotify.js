@@ -37,6 +37,37 @@ const Spotify = {
         }
 
     },
+    savePlayList: async function (name, tracks) {
+        this.getUserAccessToken();
+        if (name === undefined || tracks === undefined) {
+            return
+        }
+        let accessToken = userAccessToken;
+        let headers = { 'Authorization': 'Bearer ' + userAccessToken };
+        let userId;
+        let urlUserInfo = 'https://api.spotify.com/v1/me';
+        let response = await fetch(urlUserInfo, { headers: headers });
+
+        let userInfo = await response.json();
+        headers = { ...headers, 'Content-Type': 'application/json' }
+        let responseCreatePlayList = await fetch(`https://api.spotify.com/v1/users/${userInfo.id}/playlists`,
+            {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ name: name })
+            },
+
+        )
+        let playlistInfo = await responseCreatePlayList.json();
+        let playlistId = playlistInfo.id;
+        let createPlaylistResponse = await fetch(`https://api.spotify.com/v1/users/${userInfo.id}/playlists/${playlistId}/tracks`,
+            {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ uris: tracks })
+            })
+
+    },
     getUserAccessToken: function () {
         if (userAccessToken) {
             return userAccessToken;
@@ -44,7 +75,6 @@ const Spotify = {
         else if (window.location.href.match(/access_token=([^&]*)/) != null) {
             userAccessToken = window.location.href.match(/access_token=([^&]*)/)[0].split("=")[1];
             let expiresIn = window.location.href.match(/expires_in=([^&]*)/)[0].split("=")[1];
-            console.log(window.location.href);
             window.setTimeout(() => userAccessToken = '', expiresIn * 1000);
             window.history.pushState('Access Token', null, '/');
         } else {

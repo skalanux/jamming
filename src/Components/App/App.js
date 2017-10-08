@@ -15,15 +15,16 @@ class App extends Component {
         { id: 3, name: 'Where is the revolution', artist: 'Depeche Mode', album: 'Spirit' }
       ],
       searchResults: [
-        { id: 1, name: 'Enjoy the silence', artist: 'Depeche Mode', album: 'Violator' },
-        { id: 2, name: 'Strangelove', artist: 'Depeche Mode', album: 'Music for the masses' },
-        { id: 3, name: 'Where is the revolution', artist: 'Depeche Mode', album: 'Spirit' }
+        { id: 4, name: 'Barrel of a gun', artist: 'Depeche Mode', album: 'Ultra' },
+        { id: 5, name: 'Its no good', artist: 'Depeche Mode', album: 'Ultra' },
+        { id: 6, name: 'Behind the wheel', artist: 'Depeche Mode', album: 'Music for the masses' }
       ]
     };
+    this.addTrack = this.addTrack.bind(this);
   }
   addTrack(track) {
     let isOnTrack = false;
-
+    debugger;
     this.state.playlistTracks.forEach(playlistTrack => {
       if (playlistTrack.id === track.id) {
         isOnTrack = true;
@@ -31,7 +32,8 @@ class App extends Component {
     });
 
     if (!isOnTrack) {
-      this.setState({ playlistTracks: this.state.playlistTracks.push(track) });
+      this.state.playlistTracks.push(track);
+      this.setState({ playlistTracks: this.state.playlistTracks });
     }
   }
   render() {
@@ -41,7 +43,7 @@ class App extends Component {
         <div className="App">
           <SearchBar />
           <div className="App-playlist">
-            <SearchResults searchResults={this.state.searchResults} />
+            <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} />
             <Playlist playlistName={this.state.playlistName} playlistTracks={this.state.playlistTracks} />
           </div>
         </div>

@@ -24,7 +24,6 @@ class App extends Component {
   }
   addTrack(track) {
     let isOnTrack = false;
-    debugger;
     this.state.playlistTracks.forEach(playlistTrack => {
       if (playlistTrack.id === track.id) {
         isOnTrack = true;

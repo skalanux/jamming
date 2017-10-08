@@ -4,8 +4,8 @@ let userAccessToken = '';
 
 const Spotify = {
     search: async function (term) {
-        let url = `https://api.spotify.com/v1/search?type=track&q=${term}`;
         this.getUserAccessToken();
+        let url = `https://api.spotify.com/v1/search?type=track&q=${term}`;
         try {
             let response = await fetch(url, {
                 method: 'GET',
@@ -14,7 +14,7 @@ const Spotify = {
                 }
             });
             if (response.ok) {
-                let jsonResponse = await response.json;
+                let jsonResponse = await response.json();
                 /*
 
                     ID — returned as track.id
@@ -23,8 +23,13 @@ const Spotify = {
                     Album — returned as track.album.name
                     URI — returned as track.uri
                 */
-                console.log(jsonResponse);
-                return jsonResponse;
+                let tracks = jsonResponse.tracks.items.map(track => {
+                    return {
+                        ID: track.id,
+                        artist: track.artists[0].name, Name: track.name, Album: track.album.name, URI: track.uri
+                    }
+                })
+                return tracks;
             }
             throw new Error('Error on retrieving data from Spotify API')
         } catch (error) {

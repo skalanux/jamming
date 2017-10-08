@@ -21,6 +21,7 @@ class App extends Component {
       ]
     };
     this.addTrack = this.addTrack.bind(this);
+    this.removeTrack = this.removeTrack.bind(this);
   }
   addTrack(track) {
     let isOnTrack = false;
@@ -29,11 +30,14 @@ class App extends Component {
         isOnTrack = true;
       }
     });
-
     if (!isOnTrack) {
       this.state.playlistTracks.push(track);
       this.setState({ playlistTracks: this.state.playlistTracks });
     }
+  }
+  removeTrack(track) {
+    const playlistTracks = this.state.playlistTracks.filter(playlistTrack => playlistTrack.id !== track.id);
+    this.setState({ playlistTracks: playlistTracks });
   }
   render() {
     return (
@@ -43,7 +47,9 @@ class App extends Component {
           <SearchBar />
           <div className="App-playlist">
             <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} />
-            <Playlist playlistName={this.state.playlistName} playlistTracks={this.state.playlistTracks} />
+            <Playlist playlistName={this.state.playlistName}
+              playlistTracks={this.state.playlistTracks}
+              onRemove={this.removeTrack} />
           </div>
         </div>
       </div>

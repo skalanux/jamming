@@ -1,4 +1,5 @@
 const clientId = '15f069982add4ab9b3ce136e4fcb36b4';
+//const redirectUri = 'http://jammingska.surge.sh/';
 const redirectUri = 'http://localhost:3000/';
 let userAccessToken = '';
 
@@ -31,7 +32,7 @@ const Spotify = {
                 })
                 return tracks;
             }
-            throw new Error('Error on retrieving data from Spotify API')
+            throw new Error('Error on retrieving data from Spotify API');
         } catch (error) {
             console.log(error);
         }
@@ -39,33 +40,55 @@ const Spotify = {
     },
     savePlayList: async function (name, tracks) {
         this.getUserAccessToken();
-        if (name === undefined || tracks === undefined) {
+        if (!tracks || name === undefined) {
             return
         }
-        let accessToken = userAccessToken;
-        let headers = { 'Authorization': 'Bearer ' + userAccessToken };
-        let userId;
-        let urlUserInfo = 'https://api.spotify.com/v1/me';
-        let response = await fetch(urlUserInfo, { headers: headers });
 
-        let userInfo = await response.json();
-        headers = { ...headers, 'Content-Type': 'application/json' }
-        let responseCreatePlayList = await fetch(`https://api.spotify.com/v1/users/${userInfo.id}/playlists`,
-            {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({ name: name })
-            },
+        try {
+            // Get user info
+            let headers = { 'Authorization': 'Bearer ' + userAccessToken };
+            let urlUserInfo = 'https://api.spotify.com/v1/me';
+            let response = await fetch(urlUserInfo, { headers: headers });
 
-        )
-        let playlistInfo = await responseCreatePlayList.json();
-        let playlistId = playlistInfo.id;
-        let createPlaylistResponse = await fetch(`https://api.spotify.com/v1/users/${userInfo.id}/playlists/${playlistId}/tracks`,
-            {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({ uris: tracks })
-            })
+            if (!response.ok) {
+                throw new Error('Fail to get user info');
+            }
+
+            let userInfo = await response.json();
+
+            // Create new playlist for user
+            headers = { ...headers, 'Content-Type': 'application/json' }
+            const urlPlaylist = `https://api.spotify.com/v1/users/${userInfo.id}/playlists`;
+
+            response = await fetch(
+                urlPlaylist,
+                {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ name: name })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Fail to create playlist');
+            }
+
+            let playlistInfo = await response.json();
+            let playlistId = playlistInfo.id;
+            const urlPlaylistTracks = `https://api.spotify.com/v1/users/${userInfo.id}/playlists/${playlistId}/tracks`;
+            response = await fetch(
+                urlPlaylistTracks,
+                {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ uris: tracks })
+                });
+            if (!response.ok) {
+                throw new Error('Fail to add tracks to playlist');
+            }
+        } catch (error) {
+            console.log(error);
+        }
 
     },
     getUserAccessToken: function () {
@@ -78,8 +101,11 @@ const Spotify = {
             window.setTimeout(() => userAccessToken = '', expiresIn * 1000);
             window.history.pushState('Access Token', null, '/');
         } else {
-            window.location.href = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
+            const authUri = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
+            console.log(authUri);
+            window.location.href = authUri;
         }
     }
-};
+}
+
 export default Spotify;

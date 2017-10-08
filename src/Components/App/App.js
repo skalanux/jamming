@@ -10,7 +10,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      playlistName: 'Depeche',
+      playlistName: 'New playlist',
       playlistTracks: [
       ],
       searchResults: [
@@ -43,17 +43,24 @@ class App extends Component {
   }
   savePlayList() {
     const trackUris = this.state.playlistTracks.map(track => track.URI);
-    Spotify.savePlayList(this.state.playlistName, trackUris).then(results => {
-      this.setState({ searchResults: [], playlistName: 'New Playlist' });
-    });
+    if (trackUris.length > 0) {
+      Spotify.savePlayList(this.state.playlistName, trackUris).then(results => {
+        this.setState({ searchResults: [], playlistName: 'New Playlist', playlistTracks: [] });
+      });
+    } else {
+      console.log('No tracks to add');
+    }
 
   }
   search(term) {
-    Spotify.search(term).then(results => {
-      console.log(results);
-      this.setState({ searchResults: results })
-    });
-
+    if (term !== '') {
+      Spotify.search(term).then(results => {
+        console.log(results);
+        this.setState({ searchResults: results })
+      });
+    } else {
+      this.setState({ searchResults: [] })
+    }
   }
   render() {
     return (
